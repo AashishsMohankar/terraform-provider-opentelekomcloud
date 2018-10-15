@@ -1,29 +1,67 @@
+#Ubuntu VM created by Google compute engine
+## https://docs.travis-ci.com/user/reference/overview/
 dist: trusty
+
+# If you need a more customizable environment running in a virtual machine :ubuntu environment
 sudo: required
+
 services:
-- docker
+ - docker
+
+ #Specifies language
 language: go
+
+# language version
 go:
 - 1.8.1
 
 install:
-# This script is used by the Travis build to install a cookie for
-# go.googlesource.com so rate limits are higher when using `go get` to fetch
-# packages that live there.
-# See: https://github.com/golang/go/issues/12933
-- bash scripts/gogetcookie.sh
-- go get github.com/kardianos/govendor
+- bash scripts/install_dependencies.sh
 
-script:
-- make test
-- make vendor-status
-- make vet
-- make website-test
+
+before_script:
+# creates executable file
+- go build
+
+
+
+jobs:
+  include:
+  #stage 1 to execute positive test case
+    - stage: positive_testscripts
+      script:
+        - bash scripts/positive_testcases.sh
+
+  # stage 2 to execute negative test case
+
+    - stage: negative_testscripts
+      script:
+        - bash scripts/negative_testcases.sh
+
+notifications:
+
+  email:
+    recipients:
+      - aashish.mohankar@click2cloud.net
+  ##  - apurva.dhoble@click2cloud.net
+  ##  - disha.wani@click2cloud.net
+  ##  - sapan.vaswani@click2cloud.net
+    on_success: always
+    on_failure: always
+
 
 branches:
   only:
   - master
+
+#to cache terraform installation directories
+cache:
+  directories:
+    - ./usr/local/bin/
+
+
 matrix:
-  fast_finish: true
-  allow_failures:
-  - go: tip
+# the build won’t be marked as finished until they have completed, use fast_finish to mark them as finish
+    fast_finish: true
+    allow_failures:
+    - stage: negative_testscripts
