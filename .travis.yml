@@ -43,6 +43,7 @@ notifications:
   email:
     recipients:
       - aashish.mohankar@click2cloud.net
+  ##  - abhijit.choudhari@click2cloud.net
   ##  - apurva.dhoble@click2cloud.net
   ##  - disha.wani@click2cloud.net
   ##  - sapan.vaswani@click2cloud.net
